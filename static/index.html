@@ -32,21 +32,33 @@
     <h2>結果</h2>
     <pre id="result"></pre>
 
-    <script>
-        document.getElementById('evalForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const user = document.getElementById('user').value;
-            const url = document.getElementById('url').value;
-            const match = url.match(/\/items\/([a-zA-Z0-9]+)/);
-            if (!match) {
-                document.getElementById('result').textContent = 'URLが正しくありません。';
-                return;
-            }
-            const articleId = match[1];
-            const res = await fetch(`https://qiita-eval-bot.onrender.com/evaluate/${articleId}?user=${user}`);
-            const data = await res.json();
-            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
-        });
-    </script>
+   <script>
+    document.getElementById('evalForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = document.getElementById('user').value;
+        const url = document.getElementById('url').value;
+        const match = url.match(/\/items\/([a-zA-Z0-9]+)/);
+        if (!match) {
+            document.getElementById('result').textContent = 'URLが正しくありません。';
+            return;
+        }
+        const articleId = match[1];
+        const res = await fetch(`https://qiita-eval-bot.onrender.com/evaluate/${articleId}?user=${user}`);
+        const data = await res.json();
+
+        if (data.error) {
+            document.getElementById('result').textContent = data.error;
+        } else {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <strong>ユーザー:</strong> ${data.user}<br>
+                <strong>スコア:</strong> ${data.score}点<br>
+                <strong>レビュー:</strong><br>
+                <div style="white-space: pre-wrap; margin-left: 1em;">${data.review}</div>
+            `;
+        }
+    });
+</script>
+
 </body>
 </html>
