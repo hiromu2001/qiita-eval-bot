@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Qiita記事評価フォーム</title>
+</head>
+<body>
+    <h1>Qiita記事評価フォーム</h1>
+    <form id="evalForm">
+        <label for="user">ユーザー選択:</label>
+        <select id="user" name="user">
+            <option value="chisuga-hiromu">chisuga-hiromu</option>
+            <option value="viewer">viewer</option>
+            <!-- 必要に応じて追加 -->
+        </select>
+        <br><br>
+        <label for="url">Qiita記事のURL:</label>
+        <input type="text" id="url" name="url" placeholder="https://qiita.com/xxx/items/xxxx">
+        <br><br>
+        <button type="submit">評価する</button>
+    </form>
+
+    <h2>結果</h2>
+    <pre id="result"></pre>
+
+    <script>
+        document.getElementById('evalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = document.getElementById('user').value;
+            const url = document.getElementById('url').value;
+            const match = url.match(/\/items\/([a-zA-Z0-9]+)/);
+            if (!match) {
+                document.getElementById('result').textContent = 'URLが正しくありません。';
+                return;
+            }
+            const articleId = match[1];
+            const res = await fetch(`https://qiita-eval-bot.onrender.com/evaluate/${articleId}?user=${user}`);
+            const data = await res.json();
+            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+</html>
