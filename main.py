@@ -7,6 +7,12 @@ import openai
 import re
 from datetime import datetime
 
+USER_LIST = [
+    "viewer",
+    "PEH0401", "PEH0402", "PEH0403", "PEH0404", "PEH0405",
+    "PEH0406", "PEH0407", "PEH0408", "PEH0409", "PEH0410", "PEH0411"
+]
+
 load_dotenv()
 
 # 環境変数
@@ -173,3 +179,12 @@ def get_user_history(user: str):
     except Exception as e:
         print(f"[ERROR] {e}")
         return {"error": "履歴取得時にエラーが発生しました。"}
+
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/")
+def read_index():
+    return FileResponse("static/index.html")       
